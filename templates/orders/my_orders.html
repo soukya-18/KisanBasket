@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Orders | KisanBasket
+{% endblock %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+
+    <div class="mb-4">
+
+        <h1 class="fw-bold">
+            📦 My Orders
+        </h1>
+
+        <p class="text-muted mb-0">
+            Track your KisanBasket orders and delivery status.
+        </p>
+
+    </div>
+
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+        <div class="card border-0 shadow-sm mb-4">
+
+            <div class="card-body p-4">
+
+
+                <!-- ========================= -->
+                <!-- ORDER HEADER -->
+                <!-- ========================= -->
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h5 class="fw-bold mb-1">
+                            Order #{{ order.id }}
+                        </h5>
+
+                        <small class="text-muted">
+                            Placed on
+                            {{ order.created_at|date:"d M Y, h:i A" }}
+                        </small>
+
+                    </div>
+
+
+                    <!-- Status Badge -->
+
+                    {% if order.status == "pending" %}
+
+                        <span class="badge bg-warning text-dark px-3 py-2">
+                            ⏳ Pending
+                        </span>
+
+                    {% elif order.status == "confirmed" %}
+
+                        <span class="badge bg-primary px-3 py-2">
+                            ✓ Confirmed
+                        </span>
+
+                    {% elif order.status == "shipped" %}
+
+                        <span class="badge bg-info text-dark px-3 py-2">
+                            🚚 Shipped
+                        </span>
+
+                    {% elif order.status == "delivered" %}
+
+                        <span class="badge bg-success px-3 py-2">
+                            ✓ Delivered
+                        </span>
+
+                    {% elif order.status == "cancelled" %}
+
+                        <span class="badge bg-danger px-3 py-2">
+                            ✕ Cancelled
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- ========================= -->
+                <!-- ORDER TRACKING -->
+                <!-- ========================= -->
+
+                {% if order.status != "cancelled" %}
+
+                <div class="mb-4">
+
+                    <h6 class="fw-bold mb-3">
+                        🚚 Order Tracking
+                    </h6>
+
+
+                    <div class="row text-center g-2">
+
+                        <!-- Pending -->
+
+                        <div class="col">
+
+                            {% if order.status == "pending" or order.status == "confirmed" or order.status == "shipped" or order.status == "delivered" %}
+
+                                <div class="text-success fs-4">
+                                    ✓
+                                </div>
+
+                                <small class="fw-semibold">
+                                    Pending
+                                </small>
+
+                            {% else %}
+
+                                <div class="text-muted fs-4">
+                                    ○
+                                </div>
+
+                                <small class="text-muted">
+                                    Pending
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- Confirmed -->
+
+                        <div class="col">
+
+                            {% if order.status == "confirmed" or order.status == "shipped" or order.status == "delivered" %}
+
+                                <div class="text-success fs-4">
+                                    ✓
+                                </div>
+
+                                <small class="fw-semibold">
+                                    Confirmed
+                                </small>
+
+                            {% else %}
+
+                                <div class="text-muted fs-4">
+                                    ○
+                                </div>
+
+                                <small class="text-muted">
+                                    Confirmed
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- Shipped -->
+
+                        <div class="col">
+
+                            {% if order.status == "shipped" or order.status == "delivered" %}
+
+                                <div class="text-success fs-4">
+                                    ✓
+                                </div>
+
+                                <small class="fw-semibold">
+                                    Shipped
+                                </small>
+
+                            {% else %}
+
+                                <div class="text-muted fs-4">
+                                    ○
+                                </div>
+
+                                <small class="text-muted">
+                                    Shipped
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- Delivered -->
+
+                        <div class="col">
+
+                            {% if order.status == "delivered" %}
+
+                                <div class="text-success fs-4">
+                                    ✓
+                                </div>
+
+                                <small class="fw-semibold">
+                                    Delivered
+                                </small>
+
+                            {% else %}
+
+                                <div class="text-muted fs-4">
+                                    ○
+                                </div>
+
+                                <small class="text-muted">
+                                    Delivered
+                                </small>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                    <div class="alert alert-danger">
+                        This order has been cancelled.
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ========================= -->
+                <!-- ORDER ITEMS -->
+                <!-- ========================= -->
+
+                <h6 class="fw-bold mb-2">
+                    🛒 Products
+                </h6>
+
+
+                {% for item in order.items.all %}
+
+                <div class="d-flex align-items-center py-3 border-bottom">
+
+
+                    <!-- Product Image -->
+
+                    {% if item.product.image %}
+
+                        <img
+                            src="{{ item.product.image.url }}"
+                            alt="{{ item.product.name }}"
+                            class="rounded me-3"
+                            style="
+                                height: 65px;
+                                width: 65px;
+                                object-fit: cover;
+                            "
+                        >
+
+                    {% else %}
+
+                        <div
+                            class="bg-success-subtle rounded me-3 d-flex align-items-center justify-content-center"
+                            style="
+                                height: 65px;
+                                width: 65px;
+                            "
+                        >
+                            🌱
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- Product Details -->
+
+                    <div class="flex-grow-1">
+
+                        <h6 class="fw-bold mb-1">
+                            {{ item.product.name }}
+                        </h6>
+
+                        <small class="text-muted">
+                            {{ item.quantity }}
+                            × ₹{{ item.price }}
+                            / {{ item.product.unit }}
+                        </small>
+
+                    </div>
+
+
+                    <!-- Item Total -->
+
+                    <strong class="text-success">
+
+                        ₹{% widthratio item.price 1 item.quantity %}
+
+                    </strong>
+
+                </div>
+
+                {% endfor %}
+
+
+                <!-- ========================= -->
+                <!-- ORDER INFORMATION -->
+                <!-- ========================= -->
+
+                <div class="row mt-4">
+
+
+                    <!-- Address -->
+
+                    <div class="col-md-7">
+
+                        <h6 class="fw-bold">
+                            📍 Delivery Address
+                        </h6>
+
+                        <p class="text-muted mb-0">
+                            {{ order.shipping_address }}
+                        </p>
+
+                    </div>
+
+
+                    <!-- Total -->
+
+                    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+
+                        <small class="text-muted">
+                            Order Total
+                        </small>
+
+                        <h4 class="fw-bold text-success">
+                            ₹{{ order.total_amount }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <!-- ========================= -->
+        <!-- EMPTY STATE -->
+        <!-- ========================= -->
+
+        <div class="text-center py-5">
+
+            <div class="display-1">
+                📦
+            </div>
+
+            <h2 class="fw-bold mt-3">
+                No Orders Yet
+            </h2>
+
+            <p class="text-muted">
+                You haven't placed any orders yet.
+            </p>
+
+            <a
+                href="{% url 'home' %}#products"
+                class="btn btn-success btn-lg"
+            >
+                Start Shopping
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

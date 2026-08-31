@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Profile | KisanBasket
+{% endblock %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="mb-4">
+
+                <a
+                    href="{% url 'profile' %}"
+                    class="text-success text-decoration-none"
+                >
+                    ← Back to Profile
+                </a>
+
+                <h1 class="fw-bold mt-3">
+                    ✏️ Edit Profile
+                </h1>
+
+                <p class="text-muted">
+                    Update your KisanBasket account information.
+                </p>
+
+            </div>
+
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <!-- Username -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Username
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="{{ user.username }}"
+                                disabled
+                            >
+
+                            <small class="text-muted">
+                                Username cannot be changed.
+                            </small>
+
+                        </div>
+
+
+                        <!-- Email -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control"
+                                value="{{ user.email }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        {% if farmer_profile %}
+
+                        <!-- ========================= -->
+                        <!-- FARMER INFORMATION -->
+                        <!-- ========================= -->
+
+                        <h5 class="fw-bold mb-3">
+                            🌾 Farm Information
+                        </h5>
+
+
+                        <!-- Phone -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Phone Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                name="phone"
+                                class="form-control"
+                                value="{{ farmer_profile.phone }}"
+                                placeholder="Enter phone number"
+                            >
+
+                        </div>
+
+
+                        <!-- Farm Name -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Farm Name
+                            </label>
+
+                            <input
+                                type="text"
+                                name="farm_name"
+                                class="form-control"
+                                value="{{ farmer_profile.farm_name }}"
+                                placeholder="Enter farm name"
+                            >
+
+                        </div>
+
+
+                        <!-- Farm Address -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Farm Address
+                            </label>
+
+                            <textarea
+                                name="farm_address"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Enter farm address"
+                            >{{ farmer_profile.farm_address }}</textarea>
+
+                        </div>
+
+
+                        {% elif customer_profile %}
+
+                        <!-- ========================= -->
+                        <!-- CUSTOMER INFORMATION -->
+                        <!-- ========================= -->
+
+                        <h5 class="fw-bold mb-3">
+                            👤 Contact Information
+                        </h5>
+
+
+                        <!-- Phone -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Phone Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                name="phone"
+                                class="form-control"
+                                value="{{ customer_profile.phone }}"
+                                placeholder="Enter phone number"
+                            >
+
+                        </div>
+
+
+                        <!-- Address -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Delivery Address
+                            </label>
+
+                            <textarea
+                                name="address"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Enter your address"
+                            >{{ customer_profile.address }}</textarea>
+
+                        </div>
+
+                        {% endif %}
+
+
+                        <!-- Buttons -->
+
+                        <div class="d-flex gap-2">
+
+                            <a
+                                href="{% url 'profile' %}"
+                                class="btn btn-outline-secondary flex-grow-1"
+                            >
+                                Cancel
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-success flex-grow-1"
+                            >
+                                💾 Save Changes
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

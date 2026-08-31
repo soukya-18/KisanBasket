@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="text-center mb-4">
+
+                        <div class="display-4">
+                            🌱
+                        </div>
+
+                        <h2 class="fw-bold text-success">
+                            Create Your KisanBasket Account
+                        </h2>
+
+                        <p class="text-muted">
+                            Join our marketplace as a farmer or customer.
+                        </p>
+
+                    </div>
+
+
+                    {% if messages %}
+
+                        {% for message in messages %}
+
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <!-- Account Type -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Account Type
+                            </label>
+
+                            <div class="row g-2">
+
+                                <div class="col-6">
+
+                                    <input
+                                        type="radio"
+                                        class="btn-check"
+                                        name="user_type"
+                                        id="customer"
+                                        value="customer"
+                                        checked
+                                    >
+
+                                    <label
+                                        class="btn btn-outline-success w-100"
+                                        for="customer"
+                                    >
+                                        🛒 Customer
+                                    </label>
+
+                                </div>
+
+
+                                <div class="col-6">
+
+                                    <input
+                                        type="radio"
+                                        class="btn-check"
+                                        name="user_type"
+                                        id="farmer"
+                                        value="farmer"
+                                    >
+
+                                    <label
+                                        class="btn btn-outline-success w-100"
+                                        for="farmer"
+                                    >
+                                        👨‍🌾 Farmer
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Username -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="username"
+                                class="form-label fw-semibold"
+                            >
+                                Username
+                            </label>
+
+                            <input
+                                type="text"
+                                name="username"
+                                id="username"
+                                class="form-control"
+                                placeholder="Enter username"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="email"
+                                class="form-label fw-semibold"
+                            >
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                class="form-control"
+                                placeholder="Enter email address"
+                            >
+
+                        </div>
+
+
+                        <!-- Phone -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="phone"
+                                class="form-label fw-semibold"
+                            >
+                                Phone Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                name="phone"
+                                id="phone"
+                                class="form-control"
+                                placeholder="Enter phone number"
+                            >
+
+                        </div>
+
+
+                        <!-- Customer Address -->
+
+                        <div
+                            class="mb-3"
+                            id="customer-fields"
+                        >
+
+                            <label
+                                for="address"
+                                class="form-label fw-semibold"
+                            >
+                                Address
+                            </label>
+
+                            <textarea
+                                name="address"
+                                id="address"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Enter your address"
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- Farmer Fields -->
+
+                        <div
+                            id="farmer-fields"
+                            style="display: none;"
+                        >
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="farm_name"
+                                    class="form-label fw-semibold"
+                                >
+                                    Farm Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="farm_name"
+                                    id="farm_name"
+                                    class="form-control"
+                                    placeholder="Enter your farm name"
+                                >
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="farm_address"
+                                    class="form-label fw-semibold"
+                                >
+                                    Farm Address
+                                </label>
+
+                                <textarea
+                                    name="farm_address"
+                                    id="farm_address"
+                                    class="form-control"
+                                    rows="3"
+                                    placeholder="Enter your farm address"
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Password -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="password"
+                                class="form-label fw-semibold"
+                            >
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                class="form-control"
+                                placeholder="Create a password"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Confirm Password -->
+
+                        <div class="mb-4">
+
+                            <label
+                                for="confirm_password"
+                                class="form-label fw-semibold"
+                            >
+                                Confirm Password
+                            </label>
+
+                            <input
+                                type="password"
+                                name="confirm_password"
+                                id="confirm_password"
+                                class="form-control"
+                                placeholder="Confirm your password"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Register Button -->
+
+                        <button
+                            type="submit"
+                            class="btn btn-success btn-lg w-100"
+                        >
+                            Create Account
+                        </button>
+
+                    </form>
+
+
+                    <div class="text-center mt-4">
+
+                        <p class="text-muted mb-1">
+                            Already have an account?
+                        </p>
+
+                        <a
+                            href="{% url 'login' %}"
+                            class="text-success fw-semibold text-decoration-none"
+                        >
+                            Login here
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<script>
+
+    const customerRadio = document.getElementById("customer");
+    const farmerRadio = document.getElementById("farmer");
+
+    const customerFields = document.getElementById("customer-fields");
+    const farmerFields = document.getElementById("farmer-fields");
+
+
+    function updateAccountFields() {
+
+        if (farmerRadio.checked) {
+
+            farmerFields.style.display = "block";
+            customerFields.style.display = "none";
+
+        } else {
+
+            farmerFields.style.display = "none";
+            customerFields.style.display = "block";
+
+        }
+
+    }
+
+
+    customerRadio.addEventListener(
+        "change",
+        updateAccountFields
+    );
+
+    farmerRadio.addEventListener(
+        "change",
+        updateAccountFields
+    );
+
+</script>
+
+{% endblock %}

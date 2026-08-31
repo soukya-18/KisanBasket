@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-7">
+                <h1 class="display-4 fw-bold text-success">
+                    Fresh From Farmers 🌱
+                </h1>
+
+                <p class="lead mt-3">
+                    Buy fresh agricultural products directly from farmers
+                    through KisanBasket.
+                </p>
+
+                
+
+                <a href="#" class="btn btn-outline-success btn-lg mt-3 ms-2">
+                    Become a Farmer
+                </a>
+            </div>
+
+            <div class="col-lg-5 text-center mt-4 mt-lg-0">
+                <div class="p-5 bg-success text-white rounded-4">
+                    <div class="display-1">🌾</div>
+                    <h3>Farm to Basket</h3>
+                    <p class="mb-0">
+                        Supporting farmers and delivering fresh products.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Categories -->
+<section class="py-5">
+    <div class="container">
+
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Shop by Category</h2>
+            <p class="text-muted">
+                Explore fresh agricultural products.
+            </p>
+        </div>
+
+        <div class="row g-3">
+
+            {% for category in categories %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <div class="fs-1">🌱</div>
+
+                        <h5 class="card-title mt-2">
+                            {{ category.name }}
+                        </h5>
+
+                        {% if category.description %}
+                        <p class="card-text text-muted small">
+                            {{ category.description|truncatewords:10 }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">
+                    No categories available yet.
+                </p>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Products -->
+<section id="products" class="py-5 bg-light">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Fresh Products</h2>
+            <p class="text-muted">
+                Products recently added by farmers.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            {% for product in products %}
+
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+
+                <div class="card h-100 shadow-sm border-0">
+
+                    {% if product.image %}
+                        <img
+                            src="{{ product.image.url }}"
+                            class="card-img-top"
+                            alt="{{ product.name }}"
+                            style="height: 220px; object-fit: cover;"
+                        >
+                    {% else %}
+                        <div
+                            class="bg-success-subtle d-flex align-items-center justify-content-center"
+                            style="height: 220px;"
+                        >
+                            <span class="display-2">🌱</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column">
+
+                        <small class="text-success fw-semibold">
+                            {{ product.category.name }}
+                        </small>
+
+                        <h5 class="card-title mt-1">
+                            {{ product.name }}
+                        </h5>
+
+                        <p class="card-text text-muted small">
+                            {{ product.description|truncatewords:15 }}
+                        </p>
+
+                        <div class="mt-auto">
+
+                            <h5 class="text-success fw-bold">
+                                ₹{{ product.price }}
+                                <small class="text-muted fw-normal">
+                                    / {{ product.unit }}
+                                </small>
+                            </h5>
+
+                            <p class="small text-muted mb-2">
+                                Available: {{ product.quantity }} {{ product.unit }}
+                            </p>
+                            <a href="{% url 'product_detail' product.id %}"
+   class="btn btn-outline-success w-100 mb-2">
+    View Product
+</a>
+
+<a href="{% url 'add_to_cart' product.id %}"
+   class="btn btn-success w-100">
+    Add to Cart
+</a>
+
+                           
+
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="display-1">🛒</div>
+
+                    <h4 class="mt-3">
+                        No products available yet
+                    </h4>
+
+                    <p class="text-muted">
+                        Products added through the admin panel
+                        will appear here.
+                    </p>
+
+                    <a href="/admin/marketplace/product/add/"
+                       class="btn btn-success">
+                        Add Your First Product
+                    </a>
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Why KisanBasket -->
+<section class="py-5">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Why KisanBasket?</h2>
+            <p class="text-muted">
+                A simple marketplace connecting farmers and customers.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 text-center p-4">
+                    <div class="display-5">👨‍🌾</div>
+                    <h4 class="mt-3">Direct From Farmers</h4>
+                    <p class="text-muted">
+                        Farmers can list their agricultural products
+                        directly for customers.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 text-center p-4">
+                    <div class="display-5">🥬</div>
+                    <h4 class="mt-3">Fresh Products</h4>
+                    <p class="text-muted">
+                        Discover fresh fruits, vegetables and other
+                        agricultural products.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 text-center p-4">
+                    <div class="display-5">📦</div>
+                    <h4 class="mt-3">Easy Orders</h4>
+                    <p class="text-muted">
+                        Customers can browse products and place orders
+                        easily.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Call To Action -->
+<section class="bg-success text-white py-5">
+    <div class="container text-center">
+
+        <h2 class="fw-bold">
+            Ready to explore fresh products?
+        </h2>
+
+        <p class="lead">
+            Start shopping with KisanBasket today.
+        </p>
+
+        <a href="#products" class="btn btn-light btn-lg">
+            Explore Products
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}

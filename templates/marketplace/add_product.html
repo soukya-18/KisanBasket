@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Product | KisanBasket
+{% endblock %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="mb-4">
+                <h1 class="fw-bold">🌱 Add New Product</h1>
+
+                <p class="text-muted">
+                    Add your agricultural product to the KisanBasket marketplace.
+                </p>
+            </div>
+
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <form method="POST" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+
+                        <!-- Product Name -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Product Name
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                class="form-control"
+                                placeholder="Example: Fresh Tomatoes"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Category -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Category
+                            </label>
+
+                            <select
+                                name="category"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Category
+                                </option>
+
+                                {% for category in categories %}
+
+                                    <option value="{{ category.id }}">
+                                        {{ category.name }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Description -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Description
+                            </label>
+
+                            <textarea
+                                name="description"
+                                class="form-control"
+                                rows="5"
+                                placeholder="Describe your product..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- Price -->
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-semibold">
+                                    Price (₹)
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="price"
+                                    class="form-control"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="Example: 50"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- Quantity -->
+
+                            <div class="col-md-6 mb-4">
+
+                                <label class="form-label fw-semibold">
+                                    Available Quantity
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    class="form-control"
+                                    min="0"
+                                    placeholder="Example: 100"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Unit -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Unit
+                            </label>
+
+                            <select
+                                name="unit"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="kg">
+                                    Kilogram (kg)
+                                </option>
+
+                                <option value="gram">
+                                    Gram
+                                </option>
+
+                                <option value="litre">
+                                    Litre
+                                </option>
+
+                                <option value="piece">
+                                    Piece
+                                </option>
+
+                                <option value="dozen">
+                                    Dozen
+                                </option>
+
+                                <option value="box">
+                                    Box
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Image -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Product Image
+                            </label>
+
+                            <input
+                                type="file"
+                                name="image"
+                                class="form-control"
+                                accept="image/*"
+                            >
+
+                            <small class="text-muted">
+                                Upload a clear image of your product.
+                            </small>
+
+                        </div>
+
+
+                        <!-- Form Errors -->
+
+                        {% if form.errors %}
+
+                            <div class="alert alert-danger">
+
+                                <strong>
+                                    Please correct the errors below.
+                                </strong>
+
+                                {{ form.errors }}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- Buttons -->
+
+                        <div class="d-flex gap-2 mt-4">
+
+                            <a
+                                href="{% url 'farmer_dashboard' %}"
+                                class="btn btn-outline-secondary"
+                            >
+                                Cancel
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-success flex-grow-1"
+                            >
+                                🌱 Add Product
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+
+{% block title %}
+Farmer Dashboard | KisanBasket
+{% endblock %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="fw-bold">
+                🌾 Farmer Dashboard
+            </h1>
+
+            <p class="text-muted mb-0">
+                Welcome, {{ user.username }}.
+                Manage your agricultural products and orders here.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'add_product' %}"
+            class="btn btn-success"
+        >
+            ➕ Add Product
+        </a>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- QUICK ACTIONS -->
+    <!-- ========================= -->
+
+    <div class="card border-0 shadow-sm mb-5">
+
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-3">
+                Quick Actions
+            </h5>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a
+                    href="{% url 'farmer_products' %}"
+                    class="btn btn-outline-success"
+                >
+                    🌱 My Products
+                </a>
+
+                <a
+                    href="{% url 'farmer_orders' %}"
+                    class="btn btn-outline-success"
+                >
+                    📦 Customer Orders
+                </a>
+
+                <a
+                    href="{% url 'add_product' %}"
+                    class="btn btn-success"
+                >
+                    ➕ Add Product
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- STATISTICS -->
+    <!-- ========================= -->
+
+    <div class="row g-4 mb-5">
+
+        <!-- Products -->
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                My Products
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ total_products }}
+                            </h2>
+
+                        </div>
+
+                        <div class="fs-1">
+                            🌱
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Stock -->
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Total Stock
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ total_stock }}
+                            </h2>
+
+                            <small class="text-muted">
+                                Total units available
+                            </small>
+
+                        </div>
+
+                        <div class="fs-1">
+                            📦
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PRODUCTS HEADER -->
+    <!-- ========================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+
+            <h3 class="fw-bold mb-1">
+                My Products
+            </h3>
+
+            <p class="text-muted mb-0">
+                Products added by you.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'farmer_products' %}"
+            class="btn btn-outline-success"
+        >
+            View All Products →
+        </a>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PRODUCTS -->
+    <!-- ========================= -->
+
+    {% if products %}
+
+        <div class="row g-4">
+
+            {% for product in products %}
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <!-- Product Image -->
+
+                    {% if product.image %}
+
+                        <img
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                            class="card-img-top"
+                            style="
+                                height: 220px;
+                                object-fit: cover;
+                            "
+                        >
+
+                    {% else %}
+
+                        <div
+                            class="bg-success-subtle d-flex align-items-center justify-content-center"
+                            style="
+                                height: 220px;
+                            "
+                        >
+
+                            <span class="display-3">
+                                🌱
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- Product Details -->
+
+                    <div class="card-body p-4">
+
+                        <small class="text-success fw-semibold">
+
+                            {{ product.category.name }}
+
+                        </small>
+
+
+                        <h5 class="fw-bold mt-1">
+
+                            {{ product.name }}
+
+                        </h5>
+
+
+                        <p class="text-muted small">
+
+                            {{ product.description|truncatechars:100 }}
+
+                        </p>
+
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+
+                                <strong class="text-success fs-5">
+
+                                    ₹{{ product.price }}
+
+                                </strong>
+
+                                <small class="text-muted">
+
+                                    / {{ product.unit }}
+
+                                </small>
+
+                            </div>
+
+
+                            {% if product.quantity > 0 %}
+
+                                <span class="badge bg-success-subtle text-success">
+
+                                    Stock:
+                                    {{ product.quantity }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger-subtle text-danger">
+
+                                    Out of Stock
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Actions -->
+
+                    <div class="card-footer bg-white border-0 p-4 pt-0">
+
+                        <div class="d-flex gap-2">
+
+                            <a
+                                href="{% url 'edit_product' product.id %}"
+                                class="btn btn-outline-success flex-grow-1"
+                            >
+                                ✏️ Edit
+                            </a>
+
+
+                            <a
+                                href="{% url 'delete_product' product.id %}"
+                                class="btn btn-outline-danger"
+                            >
+                                🗑️
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <!-- EMPTY STATE -->
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body text-center py-5">
+
+                <div class="display-1">
+                    🌱
+                </div>
+
+                <h3 class="fw-bold mt-3">
+                    No Products Yet
+                </h3>
+
+                <p class="text-muted">
+                    You haven't added any agricultural
+                    products yet.
+                </p>
+
+                <a
+                    href="{% url 'add_product' %}"
+                    class="btn btn-success"
+                >
+                    ➕ Add Your First Product
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- ========================= -->
+    <!-- CUSTOMER ORDERS CTA -->
+    <!-- ========================= -->
+
+    <div class="card border-0 shadow-sm mt-5">
+
+        <div class="card-body p-4">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-8">
+
+                    <h4 class="fw-bold mb-2">
+                        📦 Manage Customer Orders
+                    </h4>
+
+                    <p class="text-muted mb-md-0">
+                        View orders containing your products
+                        and manage the order status.
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                    <a
+                        href="{% url 'farmer_orders' %}"
+                        class="btn btn-success"
+                    >
+                        View Customer Orders →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+{% endblock %}

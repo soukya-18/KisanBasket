@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <div class="mb-4">
+        <h1 class="fw-bold">🧾 Checkout</h1>
+        <p class="text-muted">
+            Review your order and provide your delivery address.
+        </p>
+    </div>
+
+
+    {% if cart_items %}
+
+    <div class="row g-4">
+
+        <!-- Order Items -->
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-4">
+                        Your Order
+                    </h4>
+
+                    {% for item in cart_items %}
+
+                    <div class="d-flex align-items-center border-bottom py-3">
+
+                        <!-- Product Image -->
+                        <div class="me-3">
+
+                            {% if item.product.image %}
+
+                                <img
+                                    src="{{ item.product.image.url }}"
+                                    alt="{{ item.product.name }}"
+                                    class="rounded"
+                                    style="height: 75px; width: 75px; object-fit: cover;"
+                                >
+
+                            {% else %}
+
+                                <div
+                                    class="bg-success-subtle rounded d-flex align-items-center justify-content-center"
+                                    style="height: 75px; width: 75px;"
+                                >
+                                    <span class="fs-2">🌱</span>
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- Product Information -->
+                        <div class="flex-grow-1">
+
+                            <h6 class="fw-bold mb-1">
+                                {{ item.product.name }}
+                            </h6>
+
+                            <small class="text-muted">
+                                {{ item.quantity }}
+                                × ₹{{ item.product.price }}
+                                / {{ item.product.unit }}
+                            </small>
+
+                        </div>
+
+
+                        <!-- Subtotal -->
+                        <div>
+
+                            <strong class="text-success">
+                                ₹{{ item.subtotal }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+
+                    <!-- Total -->
+
+                    <div class="d-flex justify-content-between mt-4">
+
+                        <h5 class="fw-bold">
+                            Total
+                        </h5>
+
+                        <h4 class="fw-bold text-success">
+                            ₹{{ total }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Shipping Address -->
+        <div class="col-lg-5">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-4">
+                        📍 Delivery Address
+                    </h4>
+
+
+                    <form method="POST"
+                          action="{% url 'place_order' %}">
+
+                        {% csrf_token %}
+
+
+                        <div class="mb-3">
+
+                            <label
+                                for="shipping_address"
+                                class="form-label fw-semibold"
+                            >
+                                Shipping Address
+                            </label>
+
+                            <textarea
+                                name="shipping_address"
+                                id="shipping_address"
+                                class="form-control"
+                                rows="6"
+                                placeholder="Enter your complete delivery address"
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="alert alert-light border">
+
+                            <small class="text-muted">
+                                Please provide your complete address
+                                including house number, street,
+                                city, state and PIN code.
+                            </small>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-success btn-lg w-100"
+                        >
+                            Place Order
+                        </button>
+
+
+                        <a
+                            href="{% url 'cart' %}"
+                            class="btn btn-outline-secondary w-100 mt-2"
+                        >
+                            Back to Cart
+                        </a>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <!-- Empty Cart -->
+
+    <div class="text-center py-5">
+
+        <div class="display-1">
+            🛒
+        </div>
+
+        <h2 class="fw-bold mt-3">
+            Your cart is empty
+        </h2>
+
+        <p class="text-muted">
+            Add some fresh products before checking out.
+        </p>
+
+        <a
+            href="{% url 'home' %}#products"
+            class="btn btn-success btn-lg"
+        >
+            Start Shopping
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
