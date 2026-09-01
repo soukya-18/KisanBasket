@@ -1,0 +1,728 @@
+{% extends "base.html" %}
+
+{% block title %}
+Warehouse | KisanBasket
+{% endblock %}
+
+{% block content %}
+
+<section class="container py-5">
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+
+        <div>
+            <h1 class="fw-bold">
+                🏭 Warehouse & Inventory
+            </h1>
+
+            <p class="text-muted mb-0">
+                Manage your product stock and warehouse inventory.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- STATISTICS -->
+    <!-- ================================================= -->
+
+    <div class="row g-4 mb-5">
+
+        <!-- My Products -->
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                My Products
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ total_products }}
+                            </h2>
+
+                        </div>
+
+                        <div class="fs-1">
+                            🌱
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Total Stock -->
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Total Stock
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ total_stock }}
+                            </h2>
+
+                            <small class="text-muted">
+                                Units in inventory
+                            </small>
+
+                        </div>
+
+                        <div class="fs-1">
+                            📦
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Low Stock -->
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+                                Low Stock
+                            </p>
+
+                            <h2 class="fw-bold mb-0 text-danger">
+                                {{ total_low_stock }}
+                            </h2>
+
+                            <small class="text-muted">
+                                10 units or less
+                            </small>
+
+                        </div>
+
+                        <div class="fs-1">
+                            ⚠️
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- CREATE WAREHOUSE -->
+    <!-- ================================================= -->
+
+    <div class="card border-0 shadow-sm mb-5">
+
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-3">
+                🏭 Create Warehouse
+            </h4>
+
+            <form
+                method="POST"
+                action="{% url 'create_warehouse' %}"
+            >
+
+                {% csrf_token %}
+
+                <div class="row g-3">
+
+                    <!-- Warehouse Name -->
+
+                    <div class="col-md-5">
+
+                        <label class="form-label fw-semibold">
+                            Warehouse Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="Example: Main Warehouse"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Location -->
+
+                    <div class="col-md-5">
+
+                        <label class="form-label fw-semibold">
+                            Location
+                        </label>
+
+                        <input
+                            type="text"
+                            name="location"
+                            class="form-control"
+                            placeholder="Example: Hyderabad"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Create -->
+
+                    <div class="col-md-2 d-flex align-items-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-success w-100"
+                        >
+                            ➕ Create
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- ADD STOCK -->
+    <!-- ================================================= -->
+
+    {% if warehouses and products %}
+
+    <div class="card border-0 shadow-sm mb-5">
+
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-3">
+                📥 Add Stock
+            </h4>
+
+            <p class="text-muted">
+                Add stock to a warehouse for one of your products.
+            </p>
+
+
+            <form
+                method="POST"
+                action="{% url 'add_inventory' %}"
+            >
+
+                {% csrf_token %}
+
+                <div class="row g-3">
+
+                    <!-- Warehouse -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Warehouse
+                        </label>
+
+                        <select
+                            name="warehouse"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Select warehouse
+                            </option>
+
+                            {% for warehouse in warehouses %}
+
+                            <option value="{{ warehouse.id }}">
+
+                                {{ warehouse.name }}
+                                — {{ warehouse.location }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Product -->
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Product
+                        </label>
+
+                        <select
+                            name="product"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Select product
+                            </option>
+
+                            {% for product in products %}
+
+                            <option value="{{ product.id }}">
+                                {{ product.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Quantity -->
+
+                    <div class="col-md-2">
+
+                        <label class="form-label fw-semibold">
+                            Quantity
+                        </label>
+
+                        <input
+                            type="number"
+                            name="quantity"
+                            min="1"
+                            class="form-control"
+                            placeholder="Qty"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Add Button -->
+
+                    <div class="col-md-2 d-flex align-items-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-success w-100"
+                        >
+                            📥 Add Stock
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- INVENTORY -->
+    <!-- ================================================= -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-4">
+
+            <div class="mb-4">
+
+                <h4 class="fw-bold mb-1">
+                    📦 Inventory
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Current warehouse stock.
+                </p>
+
+            </div>
+
+
+            {% if inventory_items %}
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Warehouse
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Stock
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th class="text-end">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in inventory_items %}
+
+                        <tr>
+
+                            <!-- ================================= -->
+                            <!-- PRODUCT -->
+                            <!-- ================================= -->
+
+                            <td>
+
+                                <div class="d-flex align-items-center">
+
+                                    {% if item.product.image %}
+
+                                    <img
+                                        src="{{ item.product.image.url }}"
+                                        alt="{{ item.product.name }}"
+                                        class="rounded me-3"
+                                        style="
+                                            width: 55px;
+                                            height: 55px;
+                                            object-fit: cover;
+                                        "
+                                    >
+
+                                    {% else %}
+
+                                    <div
+                                        class="bg-success-subtle rounded me-3 d-flex align-items-center justify-content-center"
+                                        style="
+                                            width: 55px;
+                                            height: 55px;
+                                        "
+                                    >
+                                        🌱
+                                    </div>
+
+                                    {% endif %}
+
+
+                                    <div>
+
+                                        <strong>
+                                            {{ item.product.name }}
+                                        </strong>
+
+                                        <small class="text-muted d-block">
+                                            {{ item.product.category.name }}
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- ================================= -->
+                            <!-- WAREHOUSE -->
+                            <!-- ================================= -->
+
+                            <td>
+
+                                <strong>
+                                    {{ item.warehouse.name }}
+                                </strong>
+
+                                <small class="text-muted d-block">
+                                    {{ item.warehouse.location }}
+                                </small>
+
+                            </td>
+
+
+                            <!-- ================================= -->
+                            <!-- PRICE -->
+                            <!-- ================================= -->
+
+                            <td>
+
+                                <strong class="text-success">
+                                    ₹{{ item.product.price }}
+                                </strong>
+
+                                <small class="text-muted">
+                                    / {{ item.product.unit }}
+                                </small>
+
+                            </td>
+
+
+                            <!-- ================================= -->
+                            <!-- STOCK -->
+                            <!-- ================================= -->
+
+                            <td>
+
+                                <strong>
+                                    {{ item.quantity }}
+                                </strong>
+
+                                <small class="text-muted">
+                                    {{ item.product.unit }}
+                                </small>
+
+                            </td>
+
+
+                            <!-- ================================= -->
+                            <!-- STATUS -->
+                            <!-- ================================= -->
+
+                            <td>
+
+                                {% if item in low_stock_items %}
+
+                                    <span class="badge bg-danger">
+                                        ⚠️ Low Stock
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-success">
+                                        In Stock
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ================================= -->
+                            <!-- REDUCE STOCK -->
+                            <!-- ================================= -->
+
+                            <td class="text-end">
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'reduce_inventory' item.id %}"
+                                    class="d-flex justify-content-end align-items-center gap-2"
+                                >
+
+                                    {% csrf_token %}
+
+
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        min="1"
+                                        max="{{ item.quantity }}"
+                                        class="form-control form-control-sm"
+                                        style="width: 80px;"
+                                        placeholder="Qty"
+                                        required
+                                    >
+
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-outline-danger btn-sm"
+                                    >
+                                        📤 Remove
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {% else %}
+
+            <!-- ================================= -->
+            <!-- EMPTY INVENTORY -->
+            <!-- ================================= -->
+
+            <div class="text-center py-5">
+
+                <div class="display-1">
+                    📦
+                </div>
+
+                <h3 class="fw-bold mt-3">
+                    No Inventory Yet
+                </h3>
+
+                <p class="text-muted">
+                    Create a warehouse and add your product stock.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- LOW STOCK ALERT -->
+    <!-- ================================================= -->
+
+    {% if low_stock_items %}
+
+    <div class="card border-danger mt-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold text-danger mb-3">
+                ⚠️ Low Stock Alert
+            </h4>
+
+            <p class="text-muted">
+                The following products have 10 units or less remaining.
+            </p>
+
+
+            <div class="row g-3">
+
+                {% for item in low_stock_items %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="border border-danger rounded p-3">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <strong>
+                                    {{ item.product.name }}
+                                </strong>
+
+                                <p class="text-muted mb-1">
+                                    {{ item.warehouse.name }}
+                                </p>
+
+                            </div>
+
+                            <span class="badge bg-danger">
+                                ⚠️
+                            </span>
+
+                        </div>
+
+
+                        <span class="badge bg-danger">
+
+                            {{ item.quantity }}
+                            {{ item.product.unit }}
+                            remaining
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- BACK TO FARMER DASHBOARD -->
+    <!-- ================================================= -->
+
+    <div class="mt-4">
+
+        <a
+            href="{% url 'farmer_dashboard' %}"
+            class="btn btn-outline-success"
+        >
+            ← Back to Farmer Dashboard
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

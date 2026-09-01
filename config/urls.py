@@ -2,29 +2,73 @@
 URL configuration for config project.
 """
 
-from django.contrib import admin
-from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
 
-    # Marketplace
-    path("", include("marketplace.urls")),
+    # =====================================================
+    # ADMIN
+    # =====================================================
 
-    # Accounts
-    path("accounts/", include("accounts.urls")),
+    path(
+        "admin/",
+        admin.site.urls,
+    ),
 
-    # Cart and Orders
-    path("", include("orders.urls")),
+
+    # =====================================================
+    # MARKETPLACE
+    # =====================================================
+
+    path(
+        "",
+        include("marketplace.urls"),
+    ),
+
+
+    # =====================================================
+    # ACCOUNTS
+    # =====================================================
+
+    path(
+        "accounts/",
+        include("accounts.urls"),
+    ),
+
+
+    # =====================================================
+    # CART + ORDERS
+    # =====================================================
+
+    path(
+        "",
+        include("orders.urls"),
+    ),
+
+
+    # =====================================================
+    # WAREHOUSE
+    # =====================================================
+
+    path(
+        "warehouse/",
+        include("warehouse.urls"),
+    ),
+
 ]
 
 
-# Serve uploaded media files during development
+# =========================================================
+# MEDIA FILES - DEVELOPMENT
+# =========================================================
+
 if settings.DEBUG:
+
     urlpatterns += static(
         settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
+        document_root=settings.MEDIA_ROOT,
     )

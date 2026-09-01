@@ -7,18 +7,18 @@ from .views import (
     delete_product,
     edit_product,
     farmer_dashboard,
+    farmer_products,
     home,
     product_detail,
     remove_from_cart,
-    farmer_products,
 )
 
 
 urlpatterns = [
 
-    # =========================
+    # =====================================================
     # HOME
-    # =========================
+    # =====================================================
 
     path(
         "",
@@ -27,9 +27,9 @@ urlpatterns = [
     ),
 
 
-    # =========================
+    # =====================================================
     # PRODUCTS
-    # =========================
+    # =====================================================
 
     path(
         "products/<int:product_id>/",
@@ -38,9 +38,9 @@ urlpatterns = [
     ),
 
 
-    # =========================
+    # =====================================================
     # CART
-    # =========================
+    # =====================================================
 
     path(
         "cart/",
@@ -61,14 +61,20 @@ urlpatterns = [
     ),
 
 
-    # =========================
+    # =====================================================
     # FARMER DASHBOARD
-    # =========================
+    # =====================================================
 
     path(
         "farmer/dashboard/",
         farmer_dashboard,
         name="farmer_dashboard",
+    ),
+
+    path(
+        "farmer/products/",
+        farmer_products,
+        name="farmer_products",
     ),
 
     path(
@@ -88,9 +94,4 @@ urlpatterns = [
         delete_product,
         name="delete_product",
     ),
-    path(
-    "farmer/products/",
-    farmer_products,
-    name="farmer_products",
-),
 ]

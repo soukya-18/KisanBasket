@@ -1,10 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.decorators import farmer_required
 
-from .models import Product, Category
+from .models import Category, Product
 
 
 # =========================================================
@@ -13,8 +12,52 @@ from .models import Product, Category
 
 def home(request):
 
-    products = Product.objects.all().order_by("-created_at")
-    categories = Category.objects.all().order_by("name")
+    search_query = request.GET.get(
+        "q",
+        ""
+    ).strip()
+
+    category_id = request.GET.get(
+        "category",
+        ""
+    ).strip()
+
+    products = Product.objects.select_related(
+        "category",
+        "farmer",
+    ).all().order_by(
+        "-created_at"
+    )
+
+    categories = Category.objects.all().order_by(
+        "name"
+    )
+
+    # =====================================================
+    # SEARCH
+    # =====================================================
+
+    if search_query:
+
+        products = products.filter(
+            name__icontains=search_query
+        ) | products.filter(
+            description__icontains=search_query
+        )
+
+        products = products.distinct()
+
+
+    # =====================================================
+    # CATEGORY FILTER
+    # =====================================================
+
+    if category_id:
+
+        products = products.filter(
+            category_id=category_id
+        )
+
 
     return render(
         request,
@@ -22,6 +65,8 @@ def home(request):
         {
             "products": products,
             "categories": categories,
+            "search_query": search_query,
+            "selected_category": category_id,
         },
     )
 
@@ -30,10 +75,16 @@ def home(request):
 # PRODUCT DETAIL
 # =========================================================
 
-def product_detail(request, product_id):
+def product_detail(
+    request,
+    product_id,
+):
 
     product = get_object_or_404(
-        Product,
+        Product.objects.select_related(
+            "category",
+            "farmer",
+        ),
         id=product_id,
     )
 
@@ -47,10 +98,13 @@ def product_detail(request, product_id):
 
 
 # =========================================================
-# CART
+# ADD TO CART
 # =========================================================
 
-def add_to_cart(request, product_id):
+def add_to_cart(
+    request,
+    product_id,
+):
 
     product = get_object_or_404(
         Product,
@@ -62,14 +116,25 @@ def add_to_cart(request, product_id):
         {},
     )
 
-    product_id_str = str(product_id)
+    product_id_str = str(
+        product_id
+    )
 
     current_quantity = cart.get(
         product_id_str,
         0,
     )
 
-    # Don't allow more than available stock
+
+    if product.quantity <= 0:
+
+        messages.error(
+            request,
+            f"{product.name} is currently out of stock.",
+        )
+
+        return redirect("home")
+
 
     if current_quantity < product.quantity:
 
@@ -77,11 +142,31 @@ def add_to_cart(request, product_id):
             current_quantity + 1
         )
 
+        messages.success(
+            request,
+            f"{product.name} added to your cart.",
+        )
+
+    else:
+
+        messages.warning(
+            request,
+            f"Only {product.quantity} "
+            f"{product.unit} of "
+            f"{product.name} are available.",
+        )
+
+
     request.session["cart"] = cart
+
     request.session.modified = True
 
     return redirect("cart")
 
+
+# =========================================================
+# CART
+# =========================================================
 
 def cart(request):
 
@@ -91,47 +176,70 @@ def cart(request):
     )
 
     cart_items = []
+
     total = 0
+
+    cleaned_cart = {}
+
 
     for product_id, quantity in cart_data.items():
 
         try:
 
             product = Product.objects.get(
-                id=product_id
+                id=product_id,
             )
 
         except Product.DoesNotExist:
 
             continue
 
-        # Remove invalid quantities
 
         if quantity <= 0:
+
             continue
 
-        # Make sure quantity doesn't exceed stock
+
+        if product.quantity <= 0:
+
+            continue
+
 
         if quantity > product.quantity:
 
             quantity = product.quantity
 
+
         if quantity <= 0:
+
             continue
 
-        item_total = (
+
+        subtotal = (
             product.price * quantity
         )
 
-        total += item_total
+        total += subtotal
+
+
+        cleaned_cart[
+            str(product_id)
+        ] = quantity
+
 
         cart_items.append(
             {
                 "product": product,
                 "quantity": quantity,
-                "subtotal": item_total,
+                "subtotal": subtotal,
             }
         )
+
+
+    request.session["cart"] = cleaned_cart
+
+    request.session.modified = True
+
 
     return render(
         request,
@@ -143,7 +251,14 @@ def cart(request):
     )
 
 
-def update_cart(request, product_id):
+# =========================================================
+# UPDATE CART
+# =========================================================
+
+def update_cart(
+    request,
+    product_id,
+):
 
     if request.method == "POST":
 
@@ -151,6 +266,7 @@ def update_cart(request, product_id):
             Product,
             id=product_id,
         )
+
 
         try:
 
@@ -168,14 +284,17 @@ def update_cart(request, product_id):
 
             quantity = 1
 
+
         cart = request.session.get(
             "cart",
             {},
         )
 
+
         product_id_str = str(
             product_id
         )
+
 
         if quantity <= 0:
 
@@ -184,9 +303,24 @@ def update_cart(request, product_id):
                 None,
             )
 
+
+        elif product.quantity <= 0:
+
+            cart.pop(
+                product_id_str,
+                None,
+            )
+
+            messages.warning(
+                request,
+                f"{product.name} is out of stock.",
+            )
+
+
         elif quantity <= product.quantity:
 
             cart[product_id_str] = quantity
+
 
         else:
 
@@ -194,11 +328,25 @@ def update_cart(request, product_id):
                 product.quantity
             )
 
+            messages.warning(
+                request,
+                f"Only {product.quantity} "
+                f"{product.unit} of "
+                f"{product.name} are available.",
+            )
+
+
         request.session["cart"] = cart
+
         request.session.modified = True
+
 
     return redirect("cart")
 
+
+# =========================================================
+# REMOVE FROM CART
+# =========================================================
 
 def remove_from_cart(
     request,
@@ -210,17 +358,22 @@ def remove_from_cart(
         {},
     )
 
+
     product_id_str = str(
         product_id
     )
+
 
     cart.pop(
         product_id_str,
         None,
     )
 
+
     request.session["cart"] = cart
+
     request.session.modified = True
+
 
     return redirect("cart")
 
@@ -238,12 +391,15 @@ def farmer_dashboard(request):
         "-created_at"
     )
 
+
     total_products = products.count()
+
 
     total_stock = sum(
         product.quantity
         for product in products
     )
+
 
     return render(
         request,
@@ -269,6 +425,7 @@ def farmer_products(request):
         "-created_at"
     )
 
+
     return render(
         request,
         "marketplace/farmer_products.html",
@@ -288,6 +445,7 @@ def add_product(request):
     categories = Category.objects.all().order_by(
         "name"
     )
+
 
     if request.method == "POST":
 
@@ -324,10 +482,6 @@ def add_product(request):
             "image"
         )
 
-
-        # -----------------------------
-        # Validation
-        # -----------------------------
 
         if not name:
 
@@ -388,10 +542,6 @@ def add_product(request):
                 "add_product"
             )
 
-
-        # -----------------------------
-        # Convert numeric values
-        # -----------------------------
 
         try:
 
@@ -461,10 +611,6 @@ def add_product(request):
         )
 
 
-        # -----------------------------
-        # Create product
-        # -----------------------------
-
         product = Product.objects.create(
 
             farmer=request.user,
@@ -489,6 +635,7 @@ def add_product(request):
             request,
             f"{product.name} was added successfully.",
         )
+
 
         return redirect(
             "farmer_dashboard"
@@ -520,6 +667,7 @@ def edit_product(
         farmer=request.user,
     )
 
+
     categories = Category.objects.all().order_by(
         "name"
     )
@@ -560,10 +708,6 @@ def edit_product(
             "image"
         )
 
-
-        # -----------------------------
-        # Validation
-        # -----------------------------
 
         if not name:
 
@@ -609,6 +753,19 @@ def edit_product(
             messages.error(
                 request,
                 "Product quantity is required.",
+            )
+
+            return redirect(
+                "edit_product",
+                product_id=product.id,
+            )
+
+
+        if not category_id:
+
+            messages.error(
+                request,
+                "Please select a category.",
             )
 
             return redirect(
@@ -683,28 +840,11 @@ def edit_product(
             )
 
 
-        if not category_id:
-
-            messages.error(
-                request,
-                "Please select a category.",
-            )
-
-            return redirect(
-                "edit_product",
-                product_id=product.id,
-            )
-
-
         category = get_object_or_404(
             Category,
             id=category_id,
         )
 
-
-        # -----------------------------
-        # Update product
-        # -----------------------------
 
         product.name = name
 
@@ -731,6 +871,7 @@ def edit_product(
             request,
             f"{product.name} was updated successfully.",
         )
+
 
         return redirect(
             "farmer_dashboard"
@@ -770,10 +911,12 @@ def delete_product(
 
         product.delete()
 
+
         messages.success(
             request,
             f"{product_name} was deleted successfully.",
         )
+
 
         return redirect(
             "farmer_dashboard"

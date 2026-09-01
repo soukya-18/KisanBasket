@@ -9,12 +9,18 @@ from .views import (
     place_order,
     remove_from_cart,
     update_cart,
+    cancel_order,
     farmer_orders,
-    update_order_status
+    update_order_status,
 )
 
 
 urlpatterns = [
+
+    # =====================================================
+    # CART
+    # =====================================================
+
     path(
         "cart/",
         cart,
@@ -39,6 +45,11 @@ urlpatterns = [
         name="remove_from_cart",
     ),
 
+
+    # =====================================================
+    # CHECKOUT
+    # =====================================================
+
     path(
         "checkout/",
         checkout,
@@ -51,25 +62,48 @@ urlpatterns = [
         name="place_order",
     ),
 
+
+    # =====================================================
+    # ORDER SUCCESS
+    # =====================================================
+
     path(
         "order-success/<int:order_id>/",
         order_success,
         name="order_success",
     ),
 
+
+    # =====================================================
+    # CUSTOMER ORDERS
+    # =====================================================
+
     path(
         "orders/",
         my_orders,
         name="my_orders",
     ),
+
     path(
-    "farmer/orders/",
-    farmer_orders,
-    name="farmer_orders",
-),
-path(
-    "farmer/orders/<int:order_id>/status/",
-    update_order_status,
-    name="update_order_status",
-),
+        "orders/<int:order_id>/cancel/",
+        cancel_order,
+        name="cancel_order",
+    ),
+
+
+    # =====================================================
+    # FARMER ORDERS
+    # =====================================================
+
+    path(
+        "farmer/orders/",
+        farmer_orders,
+        name="farmer_orders",
+    ),
+
+    path(
+        "farmer/orders/<int:order_id>/status/",
+        update_order_status,
+        name="update_order_status",
+    ),
 ]
