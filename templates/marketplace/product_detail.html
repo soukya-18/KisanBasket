@@ -1,78 +1,412 @@
 {% extends "base.html" %}
 
+{% block title %}
+{{ product.name }} | KisanBasket
+{% endblock %}
+
 {% block content %}
 
 <section class="container py-5">
 
-    <div class="row">
-
-        <div class="col-md-6">
-            {% if product.image %}
-                <img
-                    src="{{ product.image.url }}"
-                    class="img-fluid rounded"
-                    alt="{{ product.name }}"
-                >
-            {% else %}
-                <div class="bg-light rounded p-5 text-center">
-                    🌾
-                    <p class="mt-3">No image available</p>
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="col-md-6">
-
-            <p class="text-muted">
-                {{ product.category.name }}
-            </p>
-
-            <h1>{{ product.name }}</h1>
-
-            <h3>₹{{ product.price }} / {{ product.unit }}</h3>
-
-            <p class="mt-4">
-                {{ product.description }}
-            </p>
-
-            <p>
-                <strong>Available:</strong>
-                {{ product.quantity }} {{ product.unit }}
-            </p>
-
-            <form method="post" action="{% url 'add_to_cart' product.id %}">
-    {% csrf_token %}
-
-    <div class="mb-3">
-        <label for="quantity" class="form-label">
-            Quantity
-        </label>
-
-        <input
-            type="number"
-            name="quantity"
-            id="quantity"
-            class="form-control"
-            value="1"
-            min="1"
-            max="{{ product.quantity }}"
-            required
+    <!-- Back -->
+    <div class="mb-4">
+        <a
+            href="{% url 'home' %}"
+            class="text-success text-decoration-none fw-semibold"
         >
+            ← Back to Products
+        </a>
     </div>
 
-    <button type="submit" class="btn btn-success">
-        Add to Cart
-    </button>
-</form>
 
-            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
-                Back to Products
-            </a>
+    <div class="row g-5 align-items-start">
+
+        <!-- PRODUCT IMAGE -->
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm overflow-hidden">
+
+                {% if product.image %}
+
+                    <img
+                        src="{{ product.image.url }}"
+                        alt="{{ product.name }}"
+                        class="img-fluid w-100"
+                        style="
+                            height: 480px;
+                            object-fit: cover;
+                        "
+                    >
+
+                {% else %}
+
+                    <div
+                        class="bg-success-subtle d-flex align-items-center justify-content-center"
+                        style="height:480px;"
+                    >
+                        <span style="font-size:8rem;">
+                            🌱
+                        </span>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCT INFORMATION -->
+        <div class="col-lg-6">
+
+            <!-- Category -->
+
+            <span class="badge bg-success-subtle text-success px-3 py-2 mb-3">
+                {{ product.category.name }}
+            </span>
+
+
+            <!-- Product name -->
+
+            <h1 class="display-5 fw-bold mb-3">
+                {{ product.name }}
+            </h1>
+
+
+            <!-- Farmer -->
+
+            <p class="text-muted mb-3">
+
+                👨‍🌾 Sold by
+
+                <strong class="text-dark">
+
+                    {% if product.farmer %}
+                        {{ product.farmer.username }}
+                    {% else %}
+                        KisanBasket Farmer
+                    {% endif %}
+
+                </strong>
+
+            </p>
+
+
+            <!-- Price -->
+
+            <div class="mb-4">
+
+                <span class="display-6 fw-bold text-success">
+                    ₹{{ product.price }}
+                </span>
+
+                <span class="text-muted fs-5">
+                    / {{ product.unit }}
+                </span>
+
+            </div>
+
+
+            <!-- Stock -->
+
+            {% if product.quantity > 0 %}
+
+                <div class="alert alert-success border-0">
+
+                    <div class="d-flex align-items-center">
+
+                        <span class="fs-4 me-2">
+                            📦
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                In Stock
+                            </strong>
+
+                            <div class="small">
+                                {{ product.quantity }}
+                                {{ product.unit }}
+                                available
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <div class="alert alert-danger border-0">
+
+                    <strong>
+                        ⚠️ Out of Stock
+                    </strong>
+
+                    <div class="small">
+                        This product is currently unavailable.
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- Description -->
+
+            <div class="mb-4">
+
+                <h5 class="fw-bold">
+                    About this product
+                </h5>
+
+                <p class="text-muted lh-lg">
+                    {{ product.description }}
+                </p>
+
+            </div>
+
+
+            <!-- ADD TO CART -->
+
+            {% if product.quantity > 0 %}
+
+                <div class="card border-0 bg-light shadow-sm">
+
+                    <div class="card-body p-4">
+
+                        <form
+                            method="POST"
+                            action="{% url 'add_to_cart' product.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <label
+                                for="quantity"
+                                class="form-label fw-semibold"
+                            >
+                                Quantity
+                            </label>
+
+
+                            <div class="input-group mb-3">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="changeQuantity(-1)"
+                                >
+                                    −
+                                </button>
+
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    id="quantity"
+                                    class="form-control text-center"
+                                    value="1"
+                                    min="1"
+                                    max="{{ product.quantity }}"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="changeQuantity(1)"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-success btn-lg w-100"
+                            >
+                                🛒 Add to Cart
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- PRODUCT DETAILS -->
+
+            <div class="row g-3 mt-4">
+
+                <div class="col-6">
+
+                    <div class="border rounded p-3 text-center h-100">
+
+                        <div class="fs-3">
+                            🌱
+                        </div>
+
+                        <small class="text-muted">
+                            Category
+                        </small>
+
+                        <div class="fw-semibold">
+                            {{ product.category.name }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-6">
+
+                    <div class="border rounded p-3 text-center h-100">
+
+                        <div class="fs-3">
+                            📏
+                        </div>
+
+                        <small class="text-muted">
+                            Unit
+                        </small>
+
+                        <div class="fw-semibold">
+                            {{ product.unit }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- WHY BUY -->
+
+    <div class="mt-5 pt-4">
+
+        <div class="text-center mb-4">
+
+            <h2 class="fw-bold">
+                Why Buy From KisanBasket?
+            </h2>
+
+            <p class="text-muted">
+                Fresh products directly from farmers.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+
+                    <div class="display-5">
+                        👨‍🌾
+                    </div>
+
+                    <h5 class="fw-bold mt-3">
+                        Direct From Farmers
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Buy agricultural products directly
+                        from local farmers.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+
+                    <div class="display-5">
+                        🥬
+                    </div>
+
+                    <h5 class="fw-bold mt-3">
+                        Fresh Products
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Discover fresh fruits, vegetables,
+                        grains and pulses.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="card border-0 shadow-sm h-100 text-center p-4">
+
+                    <div class="display-5">
+                        📦
+                    </div>
+
+                    <h5 class="fw-bold mt-3">
+                        Easy Ordering
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Add products to your cart and
+                        place your order easily.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
 </section>
+
+
+<script>
+
+function changeQuantity(change) {
+
+    const input = document.getElementById("quantity");
+
+    const min = parseInt(input.min);
+    const max = parseInt(input.max);
+
+    let value = parseInt(input.value) || min;
+
+    value += change;
+
+    if (value < min) {
+        value = min;
+    }
+
+    if (value > max) {
+        value = max;
+    }
+
+    input.value = value;
+}
+
+</script>
 
 {% endblock %}

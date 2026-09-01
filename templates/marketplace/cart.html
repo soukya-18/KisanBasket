@@ -1,21 +1,34 @@
 {% extends "base.html" %}
 
+{% block title %}
+Cart | KisanBasket
+{% endblock %}
+
 {% block content %}
 
-<section class="container py-5">
+<section class="py-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="fw-bold">🛒 Your Cart</h1>
-            <p class="text-muted mb-0">
-                Review the fresh products you've selected.
-            </p>
-        </div>
+```
+<div class="container">
 
-        <a href="{% url 'home' %}#products"
-           class="btn btn-outline-success">
-            Continue Shopping
-        </a>
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <div class="mb-5">
+
+        <span class="text-success fw-semibold">
+            🛒 KisanBasket
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            Your Cart
+        </h1>
+
+        <p class="text-muted mb-0">
+            Review the fresh products you've selected.
+        </p>
+
     </div>
 
 
@@ -23,118 +36,177 @@
 
     <div class="row g-4">
 
-        <!-- Cart Items -->
+
+        <!-- =========================
+             CART ITEMS
+        ========================= -->
+
         <div class="col-lg-8">
 
             {% for item in cart_items %}
 
             <div class="card border-0 shadow-sm mb-3">
 
-                <div class="card-body">
+                <div class="card-body p-3 p-md-4">
 
-                    <div class="row align-items-center">
-
-                        <!-- Product Image -->
-                        <div class="col-3 col-md-2">
-
-                            {% if item.product.image %}
-
-                                <img
-                                    src="{{ item.product.image.url }}"
-                                    alt="{{ item.product.name }}"
-                                    class="img-fluid rounded"
-                                    style="height: 90px; width: 90px; object-fit: cover;"
-                                >
-
-                            {% else %}
-
-                                <div
-                                    class="bg-success-subtle rounded d-flex align-items-center justify-content-center"
-                                    style="height: 90px; width: 90px;"
-                                >
-                                    <span class="fs-1">🌱</span>
-                                </div>
-
-                            {% endif %}
-
-                        </div>
+                    <div class="row align-items-center g-3">
 
 
-                        <!-- Product Details -->
-                        <div class="col-5 col-md-4">
+                        <!-- IMAGE -->
 
-                            <small class="text-success fw-semibold">
-                                {{ item.product.category.name }}
-                            </small>
-
-                            <h5 class="fw-bold mb-1">
-                                {{ item.product.name }}
-                            </h5>
-
-                            <p class="text-muted mb-0">
-                                ₹{{ item.product.price }}
-                                / {{ item.product.unit }}
-                            </p>
-
-                        </div>
-
-
-                        <!-- Quantity Controls -->
                         <div class="col-4 col-md-3">
 
-                            <small class="text-muted d-block mb-1">
-                                Quantity
+                            <a
+                                href="{% url 'product_detail' item.product.id %}"
+                            >
+
+                                {% if item.product.image %}
+
+                                    <img
+                                        src="{{ item.product.image.url }}"
+                                        alt="{{ item.product.name }}"
+                                        class="img-fluid rounded-3"
+                                        style="
+                                            width: 100%;
+                                            height: 150px;
+                                            object-fit: cover;
+                                        "
+                                    >
+
+                                {% else %}
+
+                                    <div
+                                        class="bg-success-subtle
+                                               rounded-3
+                                               d-flex
+                                               align-items-center
+                                               justify-content-center"
+                                        style="
+                                            width: 100%;
+                                            height: 150px;
+                                        "
+                                    >
+
+                                        <span
+                                            style="font-size: 3.5rem;"
+                                        >
+                                            🌱
+                                        </span>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </a>
+
+                        </div>
+
+
+                        <!-- PRODUCT DETAILS -->
+
+                        <div class="col-8 col-md-5">
+
+                            <small class="text-success fw-semibold">
+
+                                {{ item.product.category.name }}
+
                             </small>
+
+                            <h5 class="fw-bold mt-1 mb-2">
+
+                                <a
+                                    href="{% url 'product_detail' item.product.id %}"
+                                    class="text-dark text-decoration-none"
+                                >
+                                    {{ item.product.name }}
+                                </a>
+
+                            </h5>
+
+                            <p class="text-muted small mb-2">
+
+                                {{ item.product.description|truncatewords:12 }}
+
+                            </p>
+
+                            <div>
+
+                                <strong class="text-success">
+                                    ₹{{ item.product.price }}
+                                </strong>
+
+                                <span class="text-muted">
+                                    / {{ item.product.unit }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- QUANTITY -->
+
+                        <div class="col-7 col-md-2">
+
+                            <label
+                                class="form-label small fw-semibold"
+                            >
+                                Quantity
+                            </label>
 
                             <form
                                 method="POST"
                                 action="{% url 'update_cart' item.product.id %}"
-                                class="d-flex align-items-center"
                             >
 
                                 {% csrf_token %}
 
-                                <button
-                                    type="submit"
-                                    name="quantity"
-                                    value="{{ item.quantity|add:'-1' }}"
-                                    class="btn btn-outline-success btn-sm"
-                                >
-                                    −
-                                </button>
+                                <div class="input-group">
 
-                                <span class="mx-3 fw-bold">
-                                    {{ item.quantity }}
-                                </span>
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        value="{{ item.quantity }}"
+                                        min="0"
+                                        max="{{ item.product.quantity }}"
+                                        class="form-control text-center"
+                                        required
+                                    >
 
-                                <button
-                                    type="submit"
-                                    name="quantity"
-                                    value="{{ item.quantity|add:'1' }}"
-                                    class="btn btn-outline-success btn-sm"
-                                >
-                                    +
-                                </button>
+                                    <button
+                                        type="submit"
+                                        class="btn btn-outline-success"
+                                        title="Update quantity"
+                                    >
+                                        ↻
+                                    </button>
+
+                                </div>
 
                             </form>
+
+                            <small class="text-muted">
+                                Max {{ item.product.quantity }}
+                            </small>
 
                         </div>
 
 
-                        <!-- Subtotal -->
-                        <div class="col-12 col-md-3 text-md-end mt-3 mt-md-0">
+                        <!-- SUBTOTAL + REMOVE -->
 
-                            <strong class="text-success">
+                        <div class="col-5 col-md-2 text-md-end">
+
+                            <div class="fw-bold fs-5 text-dark mb-2">
+
                                 ₹{{ item.subtotal }}
-                            </strong>
 
-                            <br>
+                            </div>
 
                             <a
                                 href="{% url 'remove_from_cart' item.product.id %}"
-                                class="btn btn-sm btn-outline-danger mt-2"
+                                class="btn btn-sm btn-outline-danger"
                             >
-                                Remove
+                                🗑️ Remove
                             </a>
 
                         </div>
@@ -147,13 +219,33 @@
 
             {% endfor %}
 
+
+            <!-- CONTINUE SHOPPING -->
+
+            <div class="mt-4">
+
+                <a
+                    href="{% url 'home' %}#products"
+                    class="btn btn-outline-success"
+                >
+                    ← Continue Shopping
+                </a>
+
+            </div>
+
         </div>
 
 
-        <!-- Order Summary -->
+        <!-- =========================
+             ORDER SUMMARY
+        ========================= -->
+
         <div class="col-lg-4">
 
-            <div class="card border-0 shadow-sm">
+            <div
+                class="card border-0 shadow-sm sticky-lg-top"
+                style="top: 90px;"
+            >
 
                 <div class="card-body p-4">
 
@@ -161,41 +253,62 @@
                         Order Summary
                     </h4>
 
-                    <div class="d-flex justify-content-between mb-3">
+
+                    <!-- PRODUCT COUNT -->
+
+                    <div
+                        class="d-flex justify-content-between
+                               mb-3"
+                    >
 
                         <span class="text-muted">
                             Products
                         </span>
 
-                        <span>
+                        <strong>
                             {{ cart_items|length }}
+                        </strong>
+
+                    </div>
+
+
+                    <hr>
+
+
+                    <!-- TOTAL -->
+
+                    <div
+                        class="d-flex justify-content-between
+                               align-items-center
+                               mb-4"
+                    >
+
+                        <span class="fw-semibold">
+                            Total
+                        </span>
+
+                        <span class="fs-3 fw-bold text-success">
+                            ₹{{ total }}
                         </span>
 
                     </div>
 
-                    <hr>
 
-                    <div class="d-flex justify-content-between mb-4">
-
-                        <strong>
-                            Total
-                        </strong>
-
-                        <strong class="text-success fs-4">
-                            ₹{{ total }}
-                        </strong>
-
-                    </div>
-
-
-                    <!-- Proceed to Checkout -->
+                    <!-- CHECKOUT -->
 
                     <a
                         href="{% url 'checkout' %}"
-                        class="btn btn-success w-100 btn-lg"
+                        class="btn btn-success btn-lg w-100"
                     >
-                        Proceed to Checkout
+                        Proceed to Checkout →
                     </a>
+
+
+                    <p
+                        class="text-muted small text-center mt-3 mb-0"
+                    >
+                        🔒 Secure checkout
+                    </p>
 
                 </div>
 
@@ -208,32 +321,43 @@
 
     {% else %}
 
-    <!-- Empty Cart -->
+    <!-- =========================
+         EMPTY CART
+    ========================= -->
 
-    <div class="text-center py-5">
+    <div class="card border-0 shadow-sm">
 
-        <div class="display-1">
-            🛒
+        <div class="card-body text-center py-5">
+
+            <div
+                class="display-1 mb-3"
+            >
+                🛒
+            </div>
+
+            <h2 class="fw-bold">
+                Your Cart is Empty
+            </h2>
+
+            <p class="text-muted mb-4">
+                You haven't added any fresh products yet.
+            </p>
+
+            <a
+                href="{% url 'home' %}#products"
+                class="btn btn-success btn-lg px-4"
+            >
+                🌱 Explore Fresh Products
+            </a>
+
         </div>
-
-        <h2 class="fw-bold mt-3">
-            Your cart is empty
-        </h2>
-
-        <p class="text-muted">
-            Looks like you haven't added any products yet.
-        </p>
-
-        <a
-            href="{% url 'home' %}#products"
-            class="btn btn-success btn-lg"
-        >
-            Start Shopping
-        </a>
 
     </div>
 
     {% endif %}
+
+</div>
+```
 
 </section>
 

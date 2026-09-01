@@ -1,14 +1,32 @@
 {% extends "base.html" %}
 
+{% block title %}
+Checkout | KisanBasket
+{% endblock %}
+
 {% block content %}
 
-<section class="container py-5">
+<section class="py-5">
 
-    <div class="mb-4">
-        <h1 class="fw-bold">🧾 Checkout</h1>
-        <p class="text-muted">
+```
+<div class="container">
+
+    <!-- Header -->
+
+    <div class="mb-5">
+
+        <span class="text-success fw-semibold">
+            🛒 KisanBasket
+        </span>
+
+        <h1 class="fw-bold mt-2 mb-2">
+            🧾 Checkout
+        </h1>
+
+        <p class="text-muted mb-0">
             Review your order and provide your delivery address.
         </p>
+
     </div>
 
 
@@ -16,69 +34,119 @@
 
     <div class="row g-4">
 
-        <!-- Order Items -->
+
+        <!-- =========================================
+             ORDER DETAILS
+        ========================================== -->
+
         <div class="col-lg-7">
 
             <div class="card border-0 shadow-sm">
 
-                <div class="card-body p-4">
+                <div class="card-body p-4 p-md-5">
 
-                    <h4 class="fw-bold mb-4">
-                        Your Order
-                    </h4>
+                    <div
+                        class="d-flex justify-content-between
+                               align-items-center mb-4"
+                    >
+
+                        <h4 class="fw-bold mb-0">
+                            🛍️ Your Order
+                        </h4>
+
+                        <span class="badge bg-success-subtle text-success">
+                            {{ cart_items|length }} product{{ cart_items|length|pluralize }}
+                        </span>
+
+                    </div>
+
 
                     {% for item in cart_items %}
 
-                    <div class="d-flex align-items-center border-bottom py-3">
+                    <div class="py-3 border-bottom">
 
-                        <!-- Product Image -->
-                        <div class="me-3">
+                        <div class="row align-items-center g-3">
 
-                            {% if item.product.image %}
 
-                                <img
-                                    src="{{ item.product.image.url }}"
-                                    alt="{{ item.product.name }}"
-                                    class="rounded"
-                                    style="height: 75px; width: 75px; object-fit: cover;"
-                                >
+                            <!-- IMAGE -->
 
-                            {% else %}
+                            <div class="col-3 col-sm-2">
 
-                                <div
-                                    class="bg-success-subtle rounded d-flex align-items-center justify-content-center"
-                                    style="height: 75px; width: 75px;"
-                                >
-                                    <span class="fs-2">🌱</span>
+                                {% if item.product.image %}
+
+                                    <img
+                                        src="{{ item.product.image.url }}"
+                                        alt="{{ item.product.name }}"
+                                        class="img-fluid rounded-3"
+                                        style="
+                                            width: 75px;
+                                            height: 75px;
+                                            object-fit: cover;
+                                        "
+                                    >
+
+                                {% else %}
+
+                                    <div
+                                        class="bg-success-subtle rounded-3
+                                               d-flex align-items-center
+                                               justify-content-center"
+                                        style="
+                                            width: 75px;
+                                            height: 75px;
+                                        "
+                                    >
+                                        <span class="fs-2">
+                                            🌱
+                                        </span>
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- PRODUCT -->
+
+                            <div class="col-6 col-sm-7">
+
+                                <h6 class="fw-bold mb-1">
+                                    {{ item.product.name }}
+                                </h6>
+
+                                <small class="text-muted">
+
+                                    {{ item.quantity }}
+                                    × ₹{{ item.product.price }}
+                                    / {{ item.product.unit }}
+
+                                </small>
+
+                                {% if item.product.farmer %}
+
+                                <div class="mt-1">
+
+                                    <small class="text-muted">
+                                        👨‍🌾
+                                        {{ item.product.farmer.username }}
+                                    </small>
+
                                 </div>
 
-                            {% endif %}
+                                {% endif %}
 
-                        </div>
-
-
-                        <!-- Product Information -->
-                        <div class="flex-grow-1">
-
-                            <h6 class="fw-bold mb-1">
-                                {{ item.product.name }}
-                            </h6>
-
-                            <small class="text-muted">
-                                {{ item.quantity }}
-                                × ₹{{ item.product.price }}
-                                / {{ item.product.unit }}
-                            </small>
-
-                        </div>
+                            </div>
 
 
-                        <!-- Subtotal -->
-                        <div>
+                            <!-- SUBTOTAL -->
 
-                            <strong class="text-success">
-                                ₹{{ item.subtotal }}
-                            </strong>
+                            <div class="col-3 text-end">
+
+                                <strong class="text-success">
+                                    ₹{{ item.subtotal }}
+                                </strong>
+
+                            </div>
 
                         </div>
 
@@ -87,17 +155,20 @@
                     {% endfor %}
 
 
-                    <!-- Total -->
+                    <!-- TOTAL -->
 
-                    <div class="d-flex justify-content-between mt-4">
+                    <div
+                        class="d-flex justify-content-between
+                               align-items-center mt-4"
+                    >
 
-                        <h5 class="fw-bold">
-                            Total
-                        </h5>
+                        <span class="fw-bold fs-5">
+                            Order Total
+                        </span>
 
-                        <h4 class="fw-bold text-success">
+                        <span class="fw-bold text-success fs-3">
                             ₹{{ total }}
-                        </h4>
+                        </span>
 
                     </div>
 
@@ -105,64 +176,146 @@
 
             </div>
 
+
+            <!-- BACK TO CART -->
+
+            <div class="mt-3">
+
+                <a
+                    href="{% url 'cart' %}"
+                    class="text-success text-decoration-none"
+                >
+                    ← Back to Cart
+                </a>
+
+            </div>
+
         </div>
 
 
-        <!-- Shipping Address -->
+        <!-- =========================================
+             DELIVERY ADDRESS
+        ========================================== -->
+
         <div class="col-lg-5">
 
-            <div class="card border-0 shadow-sm">
+            <div
+                class="card border-0 shadow-sm"
+            >
 
-                <div class="card-body p-4">
+                <div class="card-body p-4 p-md-5">
 
-                    <h4 class="fw-bold mb-4">
+                    <h4 class="fw-bold mb-2">
                         📍 Delivery Address
                     </h4>
 
+                    <p class="text-muted small mb-4">
+                        Enter the address where you want
+                        your order delivered.
+                    </p>
 
-                    <form method="POST"
-                          action="{% url 'place_order' %}">
+
+                    <form
+                        method="POST"
+                        action="{% url 'place_order' %}"
+                    >
 
                         {% csrf_token %}
 
 
-                        <div class="mb-3">
+                        <!-- ADDRESS -->
+
+                        <div class="mb-4">
 
                             <label
                                 for="shipping_address"
                                 class="form-label fw-semibold"
                             >
-                                Shipping Address
+                                Complete Address
                             </label>
 
                             <textarea
                                 name="shipping_address"
                                 id="shipping_address"
                                 class="form-control"
-                                rows="6"
-                                placeholder="Enter your complete delivery address"
-                                required
-                            ></textarea>
+                                rows="7"
+                                placeholder="House / Flat No.
+```
+
+Street / Area
+City
+State
+PIN Code"
+required
+></textarea>
+
+```
+                        </div>
+
+
+                        <!-- INFO -->
+
+                        <div
+                            class="alert alert-success
+                                   border-0"
+                        >
+
+                            <div class="d-flex">
+
+                                <div class="me-2">
+                                    📦
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Delivery information
+                                    </strong>
+
+                                    <p
+                                        class="small mb-0 mt-1"
+                                    >
+                                        Please enter a complete
+                                        and accurate delivery
+                                        address.
+                                    </p>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
 
-                        <div class="alert alert-light border">
+                        <!-- TOTAL -->
 
-                            <small class="text-muted">
-                                Please provide your complete address
-                                including house number, street,
-                                city, state and PIN code.
-                            </small>
+                        <div
+                            class="d-flex
+                                   justify-content-between
+                                   border-top
+                                   border-bottom
+                                   py-3
+                                   my-4"
+                        >
+
+                            <span class="fw-semibold">
+                                You'll pay
+                            </span>
+
+                            <strong class="text-success">
+                                ₹{{ total }}
+                            </strong>
 
                         </div>
 
+
+                        <!-- PLACE ORDER -->
 
                         <button
                             type="submit"
                             class="btn btn-success btn-lg w-100"
                         >
-                            Place Order
+                            🛍️ Place Order
                         </button>
 
 
@@ -179,6 +332,17 @@
 
             </div>
 
+
+            <!-- TRUST -->
+
+            <div class="text-center mt-3">
+
+                <small class="text-muted">
+                    🔒 Your order information is securely processed.
+                </small>
+
+            </div>
+
         </div>
 
     </div>
@@ -186,32 +350,41 @@
 
     {% else %}
 
-    <!-- Empty Cart -->
+    <!-- =========================================
+         EMPTY CART
+    ========================================== -->
 
-    <div class="text-center py-5">
+    <div class="card border-0 shadow-sm">
 
-        <div class="display-1">
-            🛒
+        <div class="card-body text-center py-5">
+
+            <div class="display-1">
+                🛒
+            </div>
+
+            <h2 class="fw-bold mt-3">
+                Your cart is empty
+            </h2>
+
+            <p class="text-muted mb-4">
+                Add some fresh products before checking out.
+            </p>
+
+            <a
+                href="{% url 'home' %}#products"
+                class="btn btn-success btn-lg"
+            >
+                🌱 Start Shopping
+            </a>
+
         </div>
-
-        <h2 class="fw-bold mt-3">
-            Your cart is empty
-        </h2>
-
-        <p class="text-muted">
-            Add some fresh products before checking out.
-        </p>
-
-        <a
-            href="{% url 'home' %}#products"
-            class="btn btn-success btn-lg"
-        >
-            Start Shopping
-        </a>
 
     </div>
 
     {% endif %}
+
+</div>
+```
 
 </section>
 
